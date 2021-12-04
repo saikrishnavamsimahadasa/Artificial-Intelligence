@@ -231,11 +231,11 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
             i = depth + 1
             successor_state = gameState.generateSuccessor(agent_index, act)
             agent_ind = i % agent_num   #for pacman, index will be always Zero 
-            minimax_val = self.processalphabeta(successor_state, i, agent_ind, a, b)
+            processalphabeta_val = self.processalphabeta(successor_state, i, agent_ind, a, b)
             
             #checks for the maximum value
-            if minimax_val > compare_val[1]:
-                maxim_val = (act, minimax_val)
+            if processalphabeta_val > compare_val[1]:
+                maxim_val = (act, processalphabeta_val)
                 compare_val = maxim_val
             else:
                 maxim_val = compare_val
@@ -256,11 +256,11 @@ class AlphaBetaAgent(MultiAgentSearchAgent):
             i = depth + 1
             successor_state = gameState.generateSuccessor(agent_index, act)
             agent_ind = i % agent_num   #for pacman, index will be always Zero 
-            minimax_val = self.processalphabeta(successor_state, i, agent_ind, a, b)
+            processalphabeta_val = self.processalphabeta(successor_state, i, agent_ind, a, b)
             
             #checks for the minimum value
-            if minimax_val < compare_val[1]:
-                minim_val = (act, minimax_val)
+            if processalphabeta_val < compare_val[1]:
+                minim_val = (act, processalphabeta_val)
                 compare_val = minim_val
             else:
                 minim_val = compare_val
@@ -300,5 +300,63 @@ class ExpectimaxAgent(MultiAgentSearchAgent):
         legal moves.
         """
         "*** YOUR CODE HERE ***"
-        util.raiseNotDefined()
+    
+        agent_num = gameState.getNumAgents()
+        total_depth = agent_num * self.depth
+        retur_val = self.maxim(gameState, total_depth, 0, "changenodeaction")
+        return retur_val[0]     #returns action
+
+    def maxim(self, gameState, depth, agent_index, act):
+        agent_num = gameState.getNumAgents()
+        compare_val = ("", -math.inf)
+        legal_actions = gameState.getLegalActions(agent_index)
+        for acts in legal_actions:
+            action_successor = None
+            agent_ind = (agent_index + 1) % agent_num   #for pacman, index will be always Zero
+            i = depth - 1
+            successor_state = gameState.generateSuccessor(agent_index, acts)
+            if depth != agent_num * self.depth:
+                action_successor = act
+            else:
+                action_successor = acts
+            expectimax_val = self.processexpectimax(successor_state, i, agent_ind, action_successor)
+            
+            #checks for the maximum value
+            if expectimax_val > compare_val[1]:
+                maxim_val = (acts, expectimax_val)
+                compare_val = maxim_val
+            else:
+                maxim_val = compare_val
+                
+        return maxim_val
+
+    def expect(self, gameState, depth, agent_index, act):
+        
+        agent_num = gameState.getNumAgents()
+        legal_actions = gameState.getLegalActions(agent_index)
+        propability_val = 1.0/len(legal_actions)
+        expect_val = 0
+        for acts in legal_actions:
+            i = depth - 1
+            successor_state = gameState.generateSuccessor(agent_index, acts)
+            agent_ind = (agent_index + 1) % agent_num      #for pacman, index will be always Zero 
+            expectimax_val = self.processexpectimax(successor_state, i, agent_ind, act)
+            
+            expect_val += expectimax_val * propability_val
+
+        return (act,expect_val)
+    
+    def processexpectimax(self, gameState, depth, agent_index, act):
+        #depth == 2 indicates two times of all the agents
+        if gameState.isLose() or gameState.isWin() or depth == 0:
+            return self.evaluationFunction(gameState)
+        
+        if agent_index == 0:
+            #pacman eval function values
+            maxim = self.maxim(gameState, depth, agent_index, act)
+            return maxim[1]
+        else:
+            #ghost eval function values
+            expect = self.expect(gameState, depth, agent_index, act)
+            return expect[1]
 
