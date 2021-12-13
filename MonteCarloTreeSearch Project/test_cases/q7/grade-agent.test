@@ -1,0 +1,11 @@
+class: "EvalAgentTest"
+
+agentName: "AlphaBetaAgent"
+agentArgs: "evalFn=better"
+layoutName: "smallClassic"
+
+maxTime: "14000"
+numGames: "20"
+
+randomSeed: "38548767"
+ghosts: "[DirectionalGhost(1), DirectionalGhost(2)]"

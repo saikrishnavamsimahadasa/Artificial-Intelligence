@@ -1,0 +1,13 @@
+class: "EvalAgentTest"
+
+agentName: "ExpectimaxAgent"
+agentArgs: "evalFn=better,depth=4"
+layoutName: "originalClassic"
+
+maxTime: "14000"
+numGames: "20"
+
+randomSeed: "38548767"
+ghosts: "[RandomGhost(1), RandomGhost(2), RandomGhost(3), RandomGhost(4)]"
+
+
